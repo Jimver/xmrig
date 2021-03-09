@@ -46,4 +46,10 @@ jobs:
       working-directory: ${{github.workspace}}/build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
+
+    # Upload build output
+    - uses: actions/upload-artifact@v2
+      with:
+        name: build-output
+        path: ${{github.workspace}}/build/Release/
       
