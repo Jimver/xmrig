@@ -54,5 +54,5 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: build-output
-        path: ${{github.workspace}}/build/Release/
+        path: ${{github.workspace}}\build\Release\
       
