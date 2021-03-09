@@ -17,18 +17,21 @@ jobs:
     steps:
     # Checkout xmrig repo
     - uses: actions/checkout@v2
+
+    # Cache build dir and dependencies
+    - name: Cache build directory and deps
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{github.workspace}}\build
+          ${{github.workspace}}\xmrig-deps
+        key: ${{ runner.os }}-build
     
     # Checkout xmrig dependencies repo
     - uses: actions/checkout@v2
       with:
         repository: xmrig/xmrig-deps
         path: xmrig-deps # This puts the repo contents in ${{github.workspace}}/xmrig-deps/*
-
-    - name: Cache build directory
-      uses: actions/cache@v2
-      with:
-        path: ${{github.workspace}}\build
-        key: ${{ runner.os }}-build
 
     # Create build dir
     - name: Create Build Environment
