@@ -10,6 +10,7 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-latest]
 
@@ -60,6 +61,7 @@ jobs:
 
     - name: Compile static libraries
       if: runner.os == 'Linux'
+      working-directory: ${{github.workspace}}/scripts
       run: ${{github.workspace}}/scripts/build_deps.sh
 
     - name: Configure CMake (Linux)
