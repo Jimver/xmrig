@@ -34,7 +34,7 @@ jobs:
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
       working-directory: ${{github.workspace}}\build
-      run: cmake ${{github.workspace}}\.. -G "Visual Studio 16 2019" -A x64 -DXMRIG_DEPS=${{github.workspace}}\xmrig-deps\msvc2019\x64
+      run: cmake ${{github.workspace}}\build\.. -G "Visual Studio 16 2019" -A x64 -DXMRIG_DEPS=${{github.workspace}}\xmrig-deps\msvc2019\x64
       
     - name: Build
       working-directory: ${{github.workspace}}/build
