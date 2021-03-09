@@ -4,10 +4,6 @@ on: [push]
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -27,8 +23,6 @@ jobs:
           ${{github.workspace}}\build
           ${{github.workspace}}\xmrig-deps
         key: ${{ runner.os }}-cache
-
-    # Cache build dir only
     - name: Cache build directory and deps (Linux)
       if: runner.os == 'Linux'
       uses: actions/cache@v2
@@ -38,12 +32,19 @@ jobs:
           ${{github.workspace}}scripts/deps
         key: ${{ runner.os }}-cache
     
-    # Checkout xmrig dependencies repo (for Windows)
+    # Get dependencies
     - uses: actions/checkout@v2
       if: runner.os == 'Windows'
       with:
         repository: xmrig/xmrig-deps
         path: xmrig-deps # This puts the repo contents in ${{github.workspace}}/xmrig-deps/*
+    - name: Install linux dependencies
+      if: runner.os == 'Linux'
+      run: sudo apt-get install git build-essential cmake automake libtool autoconf
+    - name: Compile static libraries
+      if: runner.os == 'Linux'
+      working-directory: ${{github.workspace}}/scripts
+      run: ${{github.workspace}}/scripts/build_deps.sh
 
     # Create build dir
     - name: Create Build Environment
@@ -51,30 +52,21 @@ jobs:
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{github.workspace}}/build
 
+    # Configure CMake
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{github.workspace}}\build
       run: cmake ${{github.workspace}}\build\.. -G "Visual Studio 16 2019" -A x64 -DXMRIG_DEPS=${{github.workspace}}\xmrig-deps\msvc2019\x64
-
-    - name: Install linux dependencies
-      if: runner.os == 'Linux'
-      run: sudo apt-get install git build-essential cmake automake libtool autoconf
-
-    - name: Compile static libraries
-      if: runner.os == 'Linux'
-      working-directory: ${{github.workspace}}/scripts
-      run: ${{github.workspace}}/scripts/build_deps.sh
-
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{github.workspace}}/build
       run: cmake ${{github.workspace}}/build/.. -DXMRIG_DEPS=${{github.workspace}}/scripts/deps
       
+    # Build
     - name: Build (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{github.workspace}}/build
       run: cmake --build . --config Release
-
     - name: Build (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{github.workspace}}/build
@@ -82,7 +74,13 @@ jobs:
 
     # Upload build output
     - uses: actions/upload-artifact@v2
+      if: runner.os == 'Windows'
       with:
         name: build-output-${{matrix.os}}
         path: ${{github.workspace}}/build/Release/
+    - uses: actions/upload-artifact@v2
+      if: runner.os == 'Linux'
+      with:
+        name: build-output-${{matrix.os}}
+        path: ${{github.workspace}}/build/xmrig
       
