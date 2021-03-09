@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-20.04, windows-2019]
 
     steps:
     # Checkout xmrig repo
@@ -81,6 +81,6 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: runner.os == 'Linux'
       with:
-        name: build-output-${{matrix.os}}
+        name: build-output-${{runner.os}}
         path: ${{github.workspace}}/build/xmrig
       
