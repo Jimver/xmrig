@@ -128,5 +128,5 @@ jobs:
       if: runner.os == 'Linux'
       with:
         name: build-output-${{matrix.os}}-cuda
-        path: ${{github.workspace}}/xmrig-cuda/build/
+        path: ${{github.workspace}}/xmrig-cuda/build/libxmrig-cuda.so
       
