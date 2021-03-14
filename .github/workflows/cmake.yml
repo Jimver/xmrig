@@ -84,24 +84,34 @@ jobs:
         name: build-output-${{runner.os}}
         path: ${{github.workspace}}/build/xmrig
 
-    # Install CUDA
+    # Build xmrig-cuda plugin
     - uses: Jimver/cuda-toolkit@v0.1.0
       with:
         cuda: '11.2.2'
+    # Checkout CUDA repo to xmrig-cuda/
+    - uses: actions/checkout@v2
+      if: runner.os == 'Windows'
+      with:
+        repository: xmrig/xmrig-cuda
+        path: xmrig-cuda
+    # Create build dir for xmrig-cuda
+    - name: Create Build Environment for xmrig-cuda
+      working-directory: ${{github.workspace}}/xmrig-cuda
+      run: cmake -E make_directory ${{github.workspace}}/xmrig-cuda/build
     # Configure CMake for CUDA build
     - name: Configure CMake with CUDA (Windows)
       if: runner.os == 'Windows'
-      working-directory: ${{github.workspace}}\build
-      run: cmake ${{github.workspace}}\build\.. -G "Visual Studio 16 2019" -A x64 -DXMRIG_DEPS=${{github.workspace}}\xmrig-deps\msvc2019\x64 -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_PATH
+      working-directory: ${{github.workspace}}\xmrig-cuda\build
+      run: cmake ${{github.workspace}}\xmrig-cuda\build\.. -G "Visual Studio 16 2019" -A x64 -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_PATH
     # Build CUDA
-    - name: Build (Windows)
+    - name: Build xmrig-cuda (Windows)
       if: runner.os == 'Windows'
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/xmrig-cuda/build
       run: cmake --build . --config Release
     # Upload CUDA build output
     - uses: actions/upload-artifact@v2
       if: runner.os == 'Windows'
       with:
         name: build-output-${{matrix.os}}-cuda
-        path: ${{github.workspace}}/build/Release/
+        path: ${{github.workspace}}/xmrig-cuda/build/Release/
       
