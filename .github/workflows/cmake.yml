@@ -83,4 +83,21 @@ jobs:
       with:
         name: build-output-${{runner.os}}
         path: ${{github.workspace}}/build/xmrig
+
+    # Configure CMake for CUDA build
+    - name: Configure CMake with CUDA (Windows)
+      if: runner.os == 'Windows'
+      working-directory: ${{github.workspace}}\build
+      run: cmake ${{github.workspace}}\build\.. -G "Visual Studio 16 2019" -A x64 -DXMRIG_DEPS=${{github.workspace}}\xmrig-deps\msvc2019\x64 -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_PATH
+    # Build CUDA
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      working-directory: ${{github.workspace}}/build
+      run: cmake --build . --config Release
+    # Upload CUDA build output
+    - uses: actions/upload-artifact@v2
+      if: runner.os == 'Windows'
+      with:
+        name: build-output-${{matrix.os}}-cuda
+        path: ${{github.workspace}}/build/Release/
       
