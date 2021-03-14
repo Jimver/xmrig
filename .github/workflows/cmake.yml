@@ -117,7 +117,13 @@ jobs:
       run: make -j$(nproc)
     # Upload CUDA build output
     - uses: actions/upload-artifact@v2
+      if: runner.os == 'Windows'
       with:
         name: build-output-${{matrix.os}}-cuda
         path: ${{github.workspace}}/xmrig-cuda/build/Release/
+    - uses: actions/upload-artifact@v2
+      if: runner.os == 'Linux'
+      with:
+        name: build-output-${{matrix.os}}-cuda
+        path: ${{github.workspace}}/xmrig-cuda/build/
       
