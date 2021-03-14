@@ -84,6 +84,10 @@ jobs:
         name: build-output-${{runner.os}}
         path: ${{github.workspace}}/build/xmrig
 
+    # Install CUDA
+    - uses: Jimver/cuda-toolkit@v0.1
+      with:
+        cuda: '11.2.2'
     # Configure CMake for CUDA build
     - name: Configure CMake with CUDA (Windows)
       if: runner.os == 'Windows'
