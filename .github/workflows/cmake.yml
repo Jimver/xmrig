@@ -105,7 +105,9 @@ jobs:
       if: runner.os == 'Windows'
       working-directory: ${{github.workspace}}\xmrig-cuda\build
       shell: powershell
-      run: cmake ${{github.workspace}}\xmrig-cuda\build\.. -G "Visual Studio 16 2019" -A x64 -DCUDA_TOOLKIT_ROOT_DIR="$env:CUDA_PATH" -DCUDA_LIB="$env:CUDA_PATH\lib64\x64\cuda.lib" -DCUDA_NVRTC_LIB="$env:CUDA_PATH\lib64\x64\nvrtc.lib"
+      run: |
+        $CUDA_PATH_FORWARD_SLASH = "$env:CUDA_PATH" -replace "\\", "/"
+        cmake ${{github.workspace}}\xmrig-cuda\build\.. -G "Visual Studio 16 2019" -A x64 -DCUDA_TOOLKIT_ROOT_DIR="$CUDA_PATH_FORWARD_SLASH"
     - name: Configure CMake with CUDA (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{github.workspace}}/xmrig-cuda/build
