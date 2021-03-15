@@ -88,6 +88,7 @@ jobs:
     # Build xmrig-cuda plugin
     - name: Install CUDA
       uses: Jimver/cuda-toolkit@v0.1.0
+      id: cuda-toolkit
       with:
         cuda: '11.2.2'
     # Checkout CUDA repo to xmrig-cuda/
@@ -125,11 +126,11 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: runner.os == 'Windows'
       with:
-        name: build-output-${{matrix.os}}-cuda
+        name: build-output-${{matrix.os}}-cuda-${{steps.cuda-toolkit.outputs.cuda}}
         path: ${{github.workspace}}/xmrig-cuda/build/Release/*.dll
     - uses: actions/upload-artifact@v2
       if: runner.os == 'Linux'
       with:
-        name: build-output-${{matrix.os}}-cuda
+        name: build-output-${{matrix.os}}-cuda-${{steps.cuda-toolkit.outputs.cuda}}
         path: ${{github.workspace}}/xmrig-cuda/build/libxmrig-cuda.so
       
